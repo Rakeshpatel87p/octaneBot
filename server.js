@@ -1,4 +1,12 @@
 var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(jsonParser);
+
+app.use(express.static('public'));
 
 // var watson = require('watson-developer-cloud', {
 //     username: '8c382bce-d147-4ad6-b9d8-3468b2a48148',
@@ -17,11 +25,11 @@ var natural_language_classifier = watson.natural_language_classifier({
     version: 'v1'
 });
 
-var params = {
-    language: 'en',
-    name: 'My Classifier',
-    training_data: fs.createReadStream('./coffee_data_train.csv')
-};
+// var params = {
+//     language: 'en',
+//     name: 'My Classifier',
+//     training_data: fs.createReadStream('./coffee_data_train.csv')
+// };
 
 // natural_language_classifier.create(params, function(err, response) {
 //     if (err)
@@ -39,21 +47,33 @@ var params = {
 //       console.log(JSON.stringify(response, null, 2));
 // });
 
-natural_language_classifier.list({}, function(err, response){
-    if (err)
-        console.log('error:', err)
+// natural_language_classifier.list({}, function(err, response){
+//     if (err)
+//         console.log('error:', err)
+//         else
+//             console.log(JSON.stringify(response, null, 2))
+// });
+
+// natural_language_classifier.status({
+//   classifier_id: 'be05f9x94-nlc-3112' },
+//   function(err, response) {
+//     if (err)
+//       console.log('error:', err);
+//     else
+//       console.log(JSON.stringify(response, null, 2));
+//   }
+// );
+
+natural_language_classifier.classify({
+        text: 'Open?',
+        classifier_id: 'be05f9x94-nlc-3112'
+    },
+    function(err, response) {
+        if (err)
+            console.log('error:', err);
         else
-            console.log(JSON.stringify(response, null, 2))
-});
+            console.log(JSON.stringify(response, null, 2));
+    });
 
-natural_language_classifier.status({
-  classifier_id: 'be05f9x94-nlc-3112' },
-  function(err, response) {
-    if (err)
-      console.log('error:', err);
-    else
-      console.log(JSON.stringify(response, null, 2));
-  }
-);
-
-var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+app.listen(process.env.PORT || 8080);
+exports.app = app;
